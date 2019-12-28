@@ -1,0 +1,19 @@
+{
+  "debug": true,
+  "server": {
+    "address": ":9090"
+  },
+  "context":{
+    "timeout":2
+  },
+  "github": {
+    "token": "aaa"
+  },
+  "database": {
+    "host": "mysql",
+    "port": "3306",
+    "user": "user",
+    "pass": "password",
+    "name": "test"
+  }
+}
