@@ -9,11 +9,12 @@ import (
 	//"time"
 
 	"github.com/labstack/echo/v4"
-	"github.com/spf13/viper"
 	"github.com/shurcooL/githubv4"
+	"github.com/spf13/viper"
 	"golang.org/x/oauth2"
 
 	"github.com/tubone24/what-is-your-color/middleware"
+	"github.com/tubone24/what-is-your-color/github_lang"
 )
 
 func init() {
@@ -72,6 +73,9 @@ func main() {
 		cc := c.(*GetGitHubLang)
 		aaa := cc.Foo()
 		return cc.JSON(http.StatusOK, map[string]string{"Login": aaa})
+	})
+	e.GET("/get", func(c echo.Context) error {
+		
 	})
 
 	log.Fatal(e.Start(viper.GetString("server.address")))
