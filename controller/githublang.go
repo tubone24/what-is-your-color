@@ -34,11 +34,12 @@ var query struct {
 		Nodes []struct {
 			Repository `graphql:"... on Repository"`
 		}
-	} `graphql:"search(first: 100, query: $q, type: $searchType)"`
+	} `graphql:"search(first: 100, query: $q, type: REPOSITORY)"`
 }
 
-func GetColor(username string) echo.HandlerFunc {
+func GetColor() echo.HandlerFunc {
 	return func(c echo.Context) error {
+		username := c.Param("username")
 		src := oauth2.StaticTokenSource(
 			&oauth2.Token{AccessToken: viper.GetString("github.token")},
 		)
@@ -46,8 +47,7 @@ func GetColor(username string) echo.HandlerFunc {
 
 		client := githubv4.NewClient(httpClient)
 		variables := map[string]interface{}{
-			"q": githubql.String(username),
-			"searchType":  githubql.SearchTypeRepository,
+			"q": githubv4.String("user:" + username),
 		}
 		err := client.Query(context.Background(), &query, variables)
 		if err != nil {

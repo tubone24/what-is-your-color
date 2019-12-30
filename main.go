@@ -14,7 +14,7 @@ import (
 	"golang.org/x/oauth2"
 
 	"github.com/tubone24/what-is-your-color/middleware"
-	"github.com/tubone24/what-is-your-color/github_lang"
+	"github.com/tubone24/what-is-your-color/controller"
 )
 
 func init() {
@@ -74,9 +74,7 @@ func main() {
 		aaa := cc.Foo()
 		return cc.JSON(http.StatusOK, map[string]string{"Login": aaa})
 	})
-	e.GET("/get", func(c echo.Context) error {
-		
-	})
+	e.GET("/get/:username", controller.GetColor())
 
 	log.Fatal(e.Start(viper.GetString("server.address")))
 }
