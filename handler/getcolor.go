@@ -10,6 +10,7 @@ import (
 	"net/http"
 
 	"github.com/spf13/viper"
+	"github.com/tubone24/what-is-your-color/models"
 )
 
 type Language struct {
@@ -60,17 +61,24 @@ func GetColor() echo.HandlerFunc {
 			fmt.Println(err)
 			return echo.NewHTTPError(http.StatusInternalServerError, "Internal Error")
 		}
-		langs := map[string]int{}
+		//langs := map[string]int{}
+		langs := []models.GitHubLang{}
 		for _, repo := range query.Search.Nodes {
 			fmt.Println("---------")
 			fmt.Println(repo.Name)
 			for _, lang := range repo.Languages.Edges {
-				_, ok := langs[lang.Node.Name]
-				if ok {
-					langs[lang.Node.Name] = lang.Size + langs[lang.Node.Name]
+				tf, i := langsContains(langs, lang.Node.Name)
+				if tf {
+					langs[i].Size = lang.Size + langs[i].Size
 				} else {
-					langs[lang.Node.Name] = lang.Size
+					langs = append(langs, models.GitHubLang{Name: lang.Node.Name, Size: lang.Size, Color: lang.Node.Color})
 				}
+			//	_, ok := langs[lang.Node.Name]
+			//	if ok {
+			//		langs[lang.Node.Name] = lang.Size + langs[lang.Node.Name]
+			//	} else {
+			//		langs[lang.Node.Name] = lang.Size
+			//	}
 			}
 		}
 		sp2 := jaegertracing.CreateChildSpan(c, "Create Returns")
@@ -81,3 +89,11 @@ func GetColor() echo.HandlerFunc {
 	}
 }
 
+func langsContains(arr []models.GitHubLang, str string) (bool, int){
+	for i, v := range arr{
+		if v.Name == str{
+			return true, i
+		}
+	}
+	return false, -1
+}
