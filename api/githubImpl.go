@@ -38,15 +38,7 @@ type GithubClientImpl struct {
 }
 
 func (client *GithubClientImpl) GetColor(username string) (error, []models.GitHubLang){
-	src := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: viper.GetString("github.token")},
-	)
-	httpClient := oauth2.NewClient(context.Background(), src)
-	cc := githubv4.NewClient(httpClient)
-	variables := map[string]interface{}{
-		"q": githubv4.String("user:" + username),
-	}
-	err := cc.Query(context.Background(), &query, variables)
+	err := client.CallApi(username)
 	if err != nil {
 		return err, nil
 	}
@@ -62,6 +54,22 @@ func (client *GithubClientImpl) GetColor(username string) (error, []models.GitHu
 		}
 	}
 	return nil, langs
+}
+
+func (client *GithubClientImpl) CallApi(username string) error {
+	src := oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: viper.GetString("github.token")},
+	)
+	httpClient := oauth2.NewClient(context.Background(), src)
+	cc := githubv4.NewClient(httpClient)
+	variables := map[string]interface{}{
+		"q": githubv4.String("user:" + username),
+	}
+	err := cc.Query(context.Background(), &query, variables)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func langsContains(arr []models.GitHubLang, str string) (bool, int){
