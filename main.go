@@ -52,7 +52,6 @@ func (c *GetGitHubLang) Foo() string{
 	if err != nil {
 		// Handle error.
 	}
-	println("aaa")
 	return query.Viewer.Login
 }
 
@@ -62,6 +61,9 @@ func main() {
 	middL := myMdl.InitMiddleware()
 	e.Use(middL.CORS)
 	e.Use(middleware.Logger())
+	e.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{
+		StackSize:  1 << 10, // 1 KB
+	}))
 	e.HTTPErrorHandler = handler.CustomHTTPErrorHandler
 	c := jaegertracing.New(e, nil)
 	defer c.Close()

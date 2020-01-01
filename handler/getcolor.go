@@ -57,7 +57,6 @@ func GetColor() echo.HandlerFunc {
 		sp.SetTag("Func", "GitHub v4")
 		if err != nil {
 			// Handle error.
-
 			fmt.Println(err)
 			return echo.NewHTTPError(http.StatusInternalServerError, "Internal Error")
 		}
