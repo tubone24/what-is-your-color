@@ -62,23 +62,17 @@ func GetColor() echo.HandlerFunc {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Internal Error")
 		}
 		//langs := map[string]int{}
-		langs := []models.GitHubLang{}
+		var langs []models.GitHubLang
 		for _, repo := range query.Search.Nodes {
 			fmt.Println("---------")
 			fmt.Println(repo.Name)
 			for _, lang := range repo.Languages.Edges {
-				tf, i := langsContains(langs, lang.Node.Name)
-				if tf {
+				isContain, i := langsContains(langs, lang.Node.Name)
+				if isContain {
 					langs[i].Size = lang.Size + langs[i].Size
 				} else {
 					langs = append(langs, models.GitHubLang{Name: lang.Node.Name, Size: lang.Size, Color: lang.Node.Color})
 				}
-			//	_, ok := langs[lang.Node.Name]
-			//	if ok {
-			//		langs[lang.Node.Name] = lang.Size + langs[lang.Node.Name]
-			//	} else {
-			//		langs[lang.Node.Name] = lang.Size
-			//	}
 			}
 		}
 		sp2 := jaegertracing.CreateChildSpan(c, "Create Returns")
