@@ -54,7 +54,7 @@ func GetColor() echo.HandlerFunc {
 		sp := jaegertracing.CreateChildSpan(c, "Access GitHub")
 		defer sp.Finish()
 		sp.SetBaggageItem("API Access", "GitHub v4")
-		sp.SetTag("API Access", "GitHub v4")
+		sp.SetTag("Func", "GitHub v4")
 		if err != nil {
 			// Handle error.
 
@@ -74,6 +74,10 @@ func GetColor() echo.HandlerFunc {
 				}
 			}
 		}
+		sp2 := jaegertracing.CreateChildSpan(c, "Create Returns")
+		defer sp2.Finish()
+		sp2.SetBaggageItem("Create Returns", "Create Returns")
+		sp2.SetTag("Func", "Create Returns")
 		return c.JSON(http.StatusOK, langs)
 	}
 }
