@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/labstack/echo/v4/middleware"
 	"log"
 	"net/http"
 
@@ -13,8 +14,9 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/oauth2"
 
-	"github.com/tubone24/what-is-your-color/middleware"
+	myMdl "github.com/tubone24/what-is-your-color/middleware"
 	"github.com/tubone24/what-is-your-color/handler"
+	"github.com/labstack/echo-contrib/jaegertracing"
 )
 
 func init() {
@@ -57,8 +59,12 @@ func (c *GetGitHubLang) Foo() string{
 func main() {
 	e := echo.New()
 
-	middL := middleware.InitMiddleware()
+	middL := myMdl.InitMiddleware()
 	e.Use(middL.CORS)
+	e.Use(middleware.Logger())
+	e.HTTPErrorHandler = handler.CustomHTTPErrorHandler
+	c := jaegertracing.New(e, nil)
+	defer c.Close()
 
 	//timeoutContext := time.Duration(viper.GetInt("context.timeout")) * time.Second
 

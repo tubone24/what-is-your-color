@@ -1,9 +1,9 @@
 package handler
 
-
 import (
 	"context"
 	"fmt"
+	"github.com/labstack/echo-contrib/jaegertracing"
 	"github.com/labstack/echo/v4"
 	"github.com/shurcooL/githubv4"
 	"golang.org/x/oauth2"
@@ -51,8 +51,13 @@ func GetColor() echo.HandlerFunc {
 			"q": githubv4.String("user:" + username),
 		}
 		err := client.Query(context.Background(), &query, variables)
+		sp := jaegertracing.CreateChildSpan(c, "Access GitHub")
+		defer sp.Finish()
+		sp.SetBaggageItem("API Access", "GitHub v4")
+		sp.SetTag("API Access", "GitHub v4")
 		if err != nil {
 			// Handle error.
+
 			fmt.Println(err)
 			return echo.NewHTTPError(http.StatusInternalServerError, "Internal Error")
 		}
@@ -61,9 +66,6 @@ func GetColor() echo.HandlerFunc {
 			fmt.Println("---------")
 			fmt.Println(repo.Name)
 			for _, lang := range repo.Languages.Edges {
-				fmt.Println(lang.Node.Name)
-				fmt.Println(lang.Node.Color)
-				fmt.Println(lang.Size)
 				_, ok := langs[lang.Node.Name]
 				if ok {
 					langs[lang.Node.Name] = lang.Size + langs[lang.Node.Name]
