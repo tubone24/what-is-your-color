@@ -26,3 +26,7 @@ func TestLangContainsFalse(t *testing.T) {
 	assert.Equal(t, false, actualBool)
 	assert.Equal(t, -1, actualIndex)
 }
+
+func TestGetColor(t *testing.T) {
+
+}

@@ -5,6 +5,7 @@ go 1.12
 require (
 	github.com/aws/aws-lambda-go v1.13.3
 	github.com/deckarep/golang-set v1.7.1
+	github.com/golang/mock v1.3.1 // indirect
 	github.com/labstack/echo-contrib v0.8.0
 	github.com/labstack/echo/v4 v4.1.11
 	github.com/shurcooL/githubv4 v0.0.0-20191102174205-af46314aec7b
