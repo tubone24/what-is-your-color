@@ -1,13 +1,12 @@
 package api
 
 import (
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
+	"github.com/tubone24/what-is-your-color/api/mock"
 	"github.com/tubone24/what-is-your-color/models"
 	"testing"
-	"github.com/stretchr/testify/assert"
 )
-
-type TestClientImpl struct {
-}
 
 func TestLangContainsTrue(t *testing.T) {
 	var input []models.GitHubLang
@@ -28,5 +27,9 @@ func TestLangContainsFalse(t *testing.T) {
 }
 
 func TestGetColor(t *testing.T) {
-
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	m := mock.NewMockClient(ctrl)
+	m.EXPECT().CallApi("tubone24").Return(nil)
+	m.GetColor("tubone24")
 }

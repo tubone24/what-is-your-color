@@ -8,13 +8,13 @@ type GitHub struct {
 
 type Client interface {
 	GetColor(username string) (error, []models.GitHubLang)
-	CallApi(username string) error
+	CallApi(username string) (error, *models.Query)
 }
 
 func (github *GitHub) DoGetColor(username string) (error, []models.GitHubLang) {
 	return github.Client.GetColor(username)
 }
 
-func (github *GitHub) DoCallApi(username string) error {
+func (github *GitHub) DoCallApi(username string) (error, *models.Query) {
 	return github.Client.CallApi(username)
 }

@@ -2,7 +2,7 @@ run:
 	go run main.go
 
 test:
-	go test github.com/tubone24/what-is-your-color/...
+	go test -v github.com/tubone24/what-is-your-color/...
 
 jeager:
 	docker run -d --name jaeger -e COLLECTOR_ZIPKIN_HTTP_PORT=9411 \

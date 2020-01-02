@@ -8,42 +8,18 @@ import (
 	"golang.org/x/oauth2"
 )
 
-type Language struct {
-	Name  string
-	Color string
-}
-
-type Repository struct {
-	Name string
-	Languages struct {
-		TotalSize int
-		Edges []struct {
-			Size int
-			Node struct {
-				Language `graphql:"... on Language"`
-			}
-		}
-	} `graphql:"languages(first: 100)"`
-}
-
-var query struct {
-	Search struct {
-		Nodes []struct {
-			Repository `graphql:"... on Repository"`
-		}
-	} `graphql:"search(first: 100, query: $q, type: REPOSITORY)"`
-}
+var query = models.Query{}
 
 type GithubClientImpl struct {
 }
 
 func (client *GithubClientImpl) GetColor(username string) (error, []models.GitHubLang){
-	err := client.CallApi(username)
+	err, tmpQuery := client.CallApi(username)
 	if err != nil {
 		return err, nil
 	}
 	var langs []models.GitHubLang
-	for _, repo := range query.Search.Nodes {
+	for _, repo := range tmpQuery.Search.Nodes {
 		for _, lang := range repo.Languages.Edges {
 			isContain, i := langsContains(langs, lang.Node.Name)
 			if isContain {
@@ -56,7 +32,7 @@ func (client *GithubClientImpl) GetColor(username string) (error, []models.GitHu
 	return nil, langs
 }
 
-func (client *GithubClientImpl) CallApi(username string) error {
+func (client *GithubClientImpl) CallApi(username string) (error, *models.Query){
 	src := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: viper.GetString("github.token")},
 	)
@@ -67,9 +43,9 @@ func (client *GithubClientImpl) CallApi(username string) error {
 	}
 	err := cc.Query(context.Background(), &query, variables)
 	if err != nil {
-		return err
+		return err, nil
 	}
-	return nil
+	return nil, &query
 }
 
 func langsContains(arr []models.GitHubLang, str string) (bool, int){
