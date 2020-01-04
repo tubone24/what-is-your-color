@@ -3,7 +3,13 @@
 ## Run
 
 ```
-go run main.go
+make run
 ```
 
 And access http://localhost:9090/get/username
+
+## Test
+
+```
+make test
+```
