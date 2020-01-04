@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"github.com/labstack/echo/v4/middleware"
 	"log"
@@ -10,13 +9,11 @@ import (
 	//"time"
 
 	"github.com/labstack/echo/v4"
-	"github.com/shurcooL/githubv4"
 	"github.com/spf13/viper"
-	"golang.org/x/oauth2"
 
-	myMdl "github.com/tubone24/what-is-your-color/middleware"
-	"github.com/tubone24/what-is-your-color/handler"
 	"github.com/labstack/echo-contrib/jaegertracing"
+	"github.com/tubone24/what-is-your-color/handler"
+	myMdl "github.com/tubone24/what-is-your-color/middleware"
 )
 
 func init() {
@@ -31,29 +28,6 @@ func init() {
 	}
 }
 
-type GetGitHubLang struct {
-	echo.Context
-}
-
-func (c *GetGitHubLang) Foo() string{
-	var query struct {
-		Viewer struct {
-			Login     string
-		}
-	}
-
-	src := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: viper.GetString("github.token")},
-	)
-	httpClient := oauth2.NewClient(context.Background(), src)
-
-	client := githubv4.NewClient(httpClient)
-	err := client.Query(context.Background(), &query, nil)
-	if err != nil {
-		// Handle error.
-	}
-	return query.Viewer.Login
-}
 
 func main() {
 	e := echo.New()
@@ -72,14 +46,14 @@ func main() {
 
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			cc := &GetGitHubLang{c}
+			cc := &handler.GetGitHubUser{c}
 			return next(cc)
 		}
 	})
 
 	e.GET("/", func(c echo.Context) error {
-		cc := c.(*GetGitHubLang)
-		aaa := cc.Foo()
+		cc := c.(*handler.GetGitHubUser)
+		aaa := cc.GetUser()
 		return cc.JSON(http.StatusOK, map[string]string{"Login": aaa})
 	})
 	e.GET("/get/:username", handler.GetColor())
